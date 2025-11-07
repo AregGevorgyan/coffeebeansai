@@ -1,5 +1,5 @@
-import { streamText, UIMessage, convertToModelMessages } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
+import { convertToModelMessages, streamText, type UIMessage } from "ai";
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 

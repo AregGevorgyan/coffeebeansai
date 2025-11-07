@@ -1,10 +1,15 @@
 "use client";
 
+import { useChat } from "@ai-sdk/react";
+import { SourceUrlUIPart } from "ai";
+import { CopyIcon, GlobeIcon, RefreshCcwIcon } from "lucide-react";
+import { Fragment, useState } from "react";
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
+import { Loader } from "@/components/ai-elements/loader";
 import {
   Message,
   MessageContent,
@@ -20,6 +25,7 @@ import {
   PromptInputAttachments,
   PromptInputBody,
   PromptInputButton,
+  PromptInputFooter,
   PromptInputHeader,
   type PromptInputMessage,
   PromptInputSelect,
@@ -29,24 +35,19 @@ import {
   PromptInputSelectValue,
   PromptInputSubmit,
   PromptInputTextarea,
-  PromptInputFooter,
   PromptInputTools,
 } from "@/components/ai-elements/prompt-input";
-import { Fragment, useState } from "react";
-import { useChat } from "@ai-sdk/react";
-import { CopyIcon, GlobeIcon, RefreshCcwIcon } from "lucide-react";
+import {
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
+} from "@/components/ai-elements/reasoning";
 import {
   Source,
   Sources,
   SourcesContent,
   SourcesTrigger,
 } from "@/components/ai-elements/sources";
-import {
-  Reasoning,
-  ReasoningContent,
-  ReasoningTrigger,
-} from "@/components/ai-elements/reasoning";
-import { Loader } from "@/components/ai-elements/loader";
 
 const models = [
   {
@@ -83,7 +84,7 @@ const ChatBotDemo = () => {
           model: model,
           webSearch: webSearch,
         },
-      }
+      },
     );
     setInput("");
   };
@@ -102,7 +103,7 @@ const ChatBotDemo = () => {
                       <SourcesTrigger
                         count={
                           message.parts.filter(
-                            (part) => part.type === "source-url"
+                            (part) => part.type === "source-url",
                           ).length
                         }
                       />
