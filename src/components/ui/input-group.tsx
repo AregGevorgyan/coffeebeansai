@@ -7,14 +7,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
-function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
+function InputGroup({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"fieldset">) {
   return (
-    <div
+    <fieldset
       data-slot="input-group"
-      role="group"
       className={cn(
-        "group/input-group border-input dark:bg-input/30 relative flex w-full items-center rounded-md border shadow-xs transition-[color,box-shadow] outline-none",
-        "h-9 min-w-0 has-[>textarea]:h-auto",
+        "group/input-group border-input dark:bg-input/30 relative m-0 flex w-full min-w-0 items-center rounded-md border p-0 shadow-xs transition-[color,box-shadow] outline-none",
+        "h-9 has-[>textarea]:h-auto",
 
         // Variants based on alignment.
         "has-[>[data-align=inline-start]]:[&>input]:pl-2",
@@ -31,7 +34,9 @@ function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
         className,
       )}
       {...props}
-    />
+    >
+      {children}
+    </fieldset>
   );
 }
 
@@ -59,20 +64,43 @@ const inputGroupAddonVariants = cva(
 function InputGroupAddon({
   className,
   align = "inline-start",
+  tabIndex,
+  onClick,
+  onKeyDown,
   ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof inputGroupAddonVariants>) {
+  const focusNearestControl = (container: HTMLElement) => {
+    container.parentElement
+      ?.querySelector<HTMLElement>("[data-slot=input-group-control]")
+      ?.focus();
+  };
+
   return (
+    // biome-ignore lint/a11y/useSemanticElements: ignore
     <div
-      role="group"
+      role="button"
       data-slot="input-group-addon"
       data-align={align}
       className={cn(inputGroupAddonVariants({ align }), className)}
-      onClick={(e) => {
-        if ((e.target as HTMLElement).closest("button")) {
+      onClick={(event) => {
+        if (
+          event.target instanceof HTMLElement &&
+          event.target.closest("button")
+        ) {
+          onClick?.(event);
           return;
         }
-        e.currentTarget.parentElement?.querySelector("input")?.focus();
+        focusNearestControl(event.currentTarget);
+        onClick?.(event);
       }}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          focusNearestControl(event.currentTarget);
+        }
+        onKeyDown?.(event);
+      }}
+      tabIndex={tabIndex ?? 0}
       {...props}
     />
   );

@@ -1,14 +1,13 @@
-import { tool } from "ai";
-import { z } from "zod";
 import { xai } from "@ai-sdk/xai";
-import { generateText } from "ai";
+import { generateText, tool } from "ai";
+import { z } from "zod";
 
 type Input = z.infer<typeof inputSchema>;
 const inputSchema = z.object({
   query: z.string().describe("The query to search the web for"),
 });
 
-export const webSearch = tool<Input, any>({
+export const webSearch = tool<Input, string>({
   name: "webSearch",
   description: "Search the web for information",
   inputSchema,

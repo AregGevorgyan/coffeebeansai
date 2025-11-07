@@ -49,7 +49,7 @@ function Carousel({
   className,
   children,
   ...props
-}: React.ComponentProps<"div"> & CarouselProps) {
+}: React.ComponentProps<"section"> & CarouselProps) {
   const [carouselRef, api] = useEmblaCarousel(
     {
       ...opts,
@@ -75,7 +75,7 @@ function Carousel({
   }, [api]);
 
   const handleKeyDown = React.useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
+    (event: React.KeyboardEvent<HTMLElement>) => {
       if (event.key === "ArrowLeft") {
         event.preventDefault();
         scrollPrev();
@@ -117,16 +117,17 @@ function Carousel({
         canScrollNext,
       }}
     >
-      <div
+      {/* biome-ignore lint/a11y/useSemanticElements: ignore */}
+      <section
+        role="region"
         onKeyDownCapture={handleKeyDown}
         className={cn("relative", className)}
-        role="region"
         aria-roledescription="carousel"
         data-slot="carousel"
         {...props}
       >
         {children}
-      </div>
+      </section>
     </CarouselContext.Provider>
   );
 }
@@ -152,11 +153,16 @@ function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
+function CarouselItem({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"section">) {
   const { orientation } = useCarousel();
 
   return (
-    <div
+    // biome-ignore lint/a11y/useSemanticElements: ignore
+    <section
       role="group"
       aria-roledescription="slide"
       data-slot="carousel-item"
@@ -166,7 +172,9 @@ function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
         className,
       )}
       {...props}
-    />
+    >
+      {children}
+    </section>
   );
 }
 

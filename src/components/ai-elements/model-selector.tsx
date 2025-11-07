@@ -1,3 +1,4 @@
+import Image, { type ImageProps } from "next/image";
 import type { ComponentProps } from "react";
 import {
   Command,
@@ -93,8 +94,8 @@ export const ModelSelectorSeparator = (props: ModelSelectorSeparatorProps) => (
 );
 
 export type ModelSelectorLogoProps = Omit<
-  ComponentProps<"img">,
-  "src" | "alt"
+  ImageProps,
+  "src" | "alt" | "width" | "height"
 > & {
   provider:
     | "moonshotai-cn"
@@ -154,20 +155,25 @@ export type ModelSelectorLogoProps = Omit<
     | "amazon-bedrock"
     | "cerebras"
     | (string & {});
+  width?: number;
+  height?: number;
 };
 
 export const ModelSelectorLogo = ({
   provider,
   className,
+  width = 12,
+  height = 12,
   ...props
 }: ModelSelectorLogoProps) => (
-  <img
+  <Image
     {...props}
     alt={`${provider} logo`}
     className={cn("size-3", className)}
-    height={12}
+    height={height}
     src={`https://models.dev/logos/${provider}.svg`}
-    width={12}
+    unoptimized
+    width={width}
   />
 );
 
@@ -179,7 +185,7 @@ export const ModelSelectorLogoGroup = ({
 }: ModelSelectorLogoGroupProps) => (
   <div
     className={cn(
-      "-space-x-1 flex shrink-0 items-center [&>img]:rounded-full [&>img]:bg-background [&>img]:p-px [&>img]:ring-1 [&>img]:ring-border",
+      "-space-x-1 flex shrink-0 items-center [&_img]:rounded-full [&_img]:bg-background [&_img]:p-px [&_img]:ring-1 [&_img]:ring-border",
       className,
     )}
     {...props}
