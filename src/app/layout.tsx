@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "CoffeeBeans AI",
-  description: "AI-powered coffee shop tournament to find the best coffee in your area",
+  description:
+    "AI-powered coffee shop tournament to find the best coffee in your area",
   icons: {
     icon: "/coffee.svg",
   },

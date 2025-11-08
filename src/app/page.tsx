@@ -2,7 +2,6 @@
 
 import { useChat } from "@ai-sdk/react";
 import type { ToolUIPart } from "ai";
-import { GlobeIcon } from "lucide-react";
 import { Fragment, useState } from "react";
 import {
   Conversation,
@@ -24,7 +23,6 @@ import {
   PromptInputAttachment,
   PromptInputAttachments,
   PromptInputBody,
-  PromptInputButton,
   PromptInputFooter,
   PromptInputHeader,
   type PromptInputMessage,
@@ -61,7 +59,6 @@ const models = [
 const ChatBotDemo = () => {
   const [input, setInput] = useState("");
   const [model, setModel] = useState<string>(models[0].value);
-  const [webSearch, setWebSearch] = useState(false);
   const { messages, sendMessage, status } = useChat();
 
   const handleSubmit = (message: PromptInputMessage) => {
@@ -80,9 +77,8 @@ const ChatBotDemo = () => {
       {
         body: {
           model: model,
-          webSearch: webSearch,
         },
-      }
+      },
     );
     setInput("");
   };

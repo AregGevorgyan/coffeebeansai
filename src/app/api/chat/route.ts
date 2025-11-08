@@ -1,9 +1,9 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
-import { webSearch } from "./tools/webSeach";
-import { getLocation } from "./tools/getLocation";
-import { findCoffeeShops } from "./tools/findCoffeeShops";
 import { battleCoffeeShops } from "./tools/battleCoffeeShops";
+import { findCoffeeShops } from "./tools/findCoffeeShops";
+import { getLocation } from "./tools/getLocation";
+import { webSearch } from "./tools/webSeach";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;

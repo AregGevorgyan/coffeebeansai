@@ -1,6 +1,5 @@
-import { tool } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
-import { generateText } from "ai";
+import { generateText, tool } from "ai";
 import { z } from "zod";
 
 /**
@@ -8,27 +7,27 @@ import { z } from "zod";
  * Returns winner and detailed reasoning
  */
 export const battleCoffeeShops = tool({
-	name: "battleCoffeeShops",
-	description:
-		"Compare two coffee shops and determine a winner based on quality, ambiance, service, and uniqueness. Uses AI with web search to gather real reviews and information.",
-	inputSchema: z.object({
-		shop1: z.object({
-			name: z.string(),
-			address: z.string(),
-			rating: z.number(),
-			userRatingsTotal: z.number(),
-		}),
-		shop2: z.object({
-			name: z.string(),
-			address: z.string(),
-			rating: z.number(),
-			userRatingsTotal: z.number(),
-		}),
-	}),
-	execute: async ({ shop1, shop2 }) => {
-		try {
-			// Use Claude Sonnet with web search to compare the shops
-			const prompt = `You are a coffee expert judging a tournament between two coffee shops. Compare these two coffee shops and determine a winner:
+  name: "battleCoffeeShops",
+  description:
+    "Compare two coffee shops and determine a winner based on quality, ambiance, service, and uniqueness. Uses AI with web search to gather real reviews and information.",
+  inputSchema: z.object({
+    shop1: z.object({
+      name: z.string(),
+      address: z.string(),
+      rating: z.number(),
+      userRatingsTotal: z.number(),
+    }),
+    shop2: z.object({
+      name: z.string(),
+      address: z.string(),
+      rating: z.number(),
+      userRatingsTotal: z.number(),
+    }),
+  }),
+  execute: async ({ shop1, shop2 }) => {
+    try {
+      // Use Claude Sonnet with web search to compare the shops
+      const prompt = `You are a coffee expert judging a tournament between two coffee shops. Compare these two coffee shops and determine a winner:
 
 **Coffee Shop 1: ${shop1.name}**
 - Address: ${shop1.address}
@@ -70,75 +69,75 @@ Format your response EXACTLY as JSON:
   "reasoning": "<detailed explanation>"
 }`;
 
-			const result = await generateText({
-				model: anthropic("claude-sonnet-4-5-20250929"),
-				prompt,
-			});
+      const result = await generateText({
+        model: anthropic("claude-sonnet-4-5-20250929"),
+        prompt,
+      });
 
-			// Parse the JSON response
-			const responseText = result.text.trim();
+      // Parse the JSON response
+      const responseText = result.text.trim();
 
-			// Extract JSON from markdown code blocks if present
-			let jsonText = responseText;
-			const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
-			if (jsonMatch) {
-				jsonText = jsonMatch[1];
-			} else {
-				// Try to find JSON object in the response
-				const objectMatch = responseText.match(/\{[\s\S]*\}/);
-				if (objectMatch) {
-					jsonText = objectMatch[0];
-				}
-			}
+      // Extract JSON from markdown code blocks if present
+      let jsonText = responseText;
+      const jsonMatch = responseText.match(/```json\s*([\s\S]*?)\s*```/);
+      if (jsonMatch) {
+        jsonText = jsonMatch[1];
+      } else {
+        // Try to find JSON object in the response
+        const objectMatch = responseText.match(/\{[\s\S]*\}/);
+        if (objectMatch) {
+          jsonText = objectMatch[0];
+        }
+      }
 
-			const battleResult = JSON.parse(jsonText);
+      const battleResult = JSON.parse(jsonText);
 
-			// Validate the response structure
-			if (
-				!battleResult.winner ||
-				!battleResult.scores ||
-				!battleResult.reasoning
-			) {
-				throw new Error("Invalid battle result structure from AI");
-			}
+      // Validate the response structure
+      if (
+        !battleResult.winner ||
+        !battleResult.scores ||
+        !battleResult.reasoning
+      ) {
+        throw new Error("Invalid battle result structure from AI");
+      }
 
-			return {
-				success: true,
-				winner: battleResult.winner,
-				scores: battleResult.scores,
-				reasoning: battleResult.reasoning,
-				timestamp: new Date().toISOString(),
-			};
-		} catch (error) {
-			console.error("Error in coffee shop battle:", error);
+      return {
+        success: true,
+        winner: battleResult.winner,
+        scores: battleResult.scores,
+        reasoning: battleResult.reasoning,
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      console.error("Error in coffee shop battle:", error);
 
-			// Fallback: simple comparison based on ratings
-			const shop1Score = shop1.rating * Math.log10(shop1.userRatingsTotal + 1);
-			const shop2Score = shop2.rating * Math.log10(shop2.userRatingsTotal + 1);
+      // Fallback: simple comparison based on ratings
+      const shop1Score = shop1.rating * Math.log10(shop1.userRatingsTotal + 1);
+      const shop2Score = shop2.rating * Math.log10(shop2.userRatingsTotal + 1);
 
-			const winner = shop1Score > shop2Score ? shop1.name : shop2.name;
+      const winner = shop1Score > shop2Score ? shop1.name : shop2.name;
 
-			return {
-				success: true,
-				winner,
-				scores: {
-					shop1: {
-						quality: Math.round(shop1.rating * 2),
-						ambiance: Math.round(shop1.rating * 2),
-						service: Math.round(shop1.rating * 2),
-						uniqueness: Math.round(shop1.rating * 2),
-					},
-					shop2: {
-						quality: Math.round(shop2.rating * 2),
-						ambiance: Math.round(shop2.rating * 2),
-						service: Math.round(shop2.rating * 2),
-						uniqueness: Math.round(shop2.rating * 2),
-					},
-				},
-				reasoning: `Based on ratings and review counts: ${shop1.name} (${shop1.rating}/5, ${shop1.userRatingsTotal} reviews) vs ${shop2.name} (${shop2.rating}/5, ${shop2.userRatingsTotal} reviews). ${winner} wins with ${winner === shop1.name ? "higher" : "better"} overall rating and customer feedback. Note: Detailed AI analysis unavailable - using fallback comparison.`,
-				timestamp: new Date().toISOString(),
-				fallback: true,
-			};
-		}
-	},
+      return {
+        success: true,
+        winner,
+        scores: {
+          shop1: {
+            quality: Math.round(shop1.rating * 2),
+            ambiance: Math.round(shop1.rating * 2),
+            service: Math.round(shop1.rating * 2),
+            uniqueness: Math.round(shop1.rating * 2),
+          },
+          shop2: {
+            quality: Math.round(shop2.rating * 2),
+            ambiance: Math.round(shop2.rating * 2),
+            service: Math.round(shop2.rating * 2),
+            uniqueness: Math.round(shop2.rating * 2),
+          },
+        },
+        reasoning: `Based on ratings and review counts: ${shop1.name} (${shop1.rating}/5, ${shop1.userRatingsTotal} reviews) vs ${shop2.name} (${shop2.rating}/5, ${shop2.userRatingsTotal} reviews). ${winner} wins with ${winner === shop1.name ? "higher" : "better"} overall rating and customer feedback. Note: Detailed AI analysis unavailable - using fallback comparison.`,
+        timestamp: new Date().toISOString(),
+        fallback: true,
+      };
+    }
+  },
 });
